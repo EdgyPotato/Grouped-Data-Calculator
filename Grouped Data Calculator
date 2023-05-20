@@ -1,0 +1,321 @@
+// This code is just a simple training for learning c++.
+// If there is any problems or changes, feel free to do it
+// Good luck and have fun!
+
+#include <iostream>
+#include <cmath>
+#include <string>
+#include <iomanip>
+#include <algorithm>
+#include <windows.h>
+using namespace std;
+
+#define SIZE 1000
+
+class Data{
+	private:
+		double c1, c2, cwidth;
+		double LB, UB;
+		double freq[SIZE], totalF, totalFX, totalFX2;
+		double mean, median, mode;
+		double newC1[SIZE], newC2[SIZE], cF[SIZE];
+		double upperB[SIZE], lowerB[SIZE], mid[SIZE];
+		double FX[SIZE], FX2[SIZE];
+		double IR, Q1, Q3, variance, SD;
+		int row;
+	public:
+		Data();
+		void readInput();
+		void calCWidth();
+		void calInterval();
+		void calCumFreq();
+		void calTotalFreq();
+		void calBoundary();
+		void calMid();
+		void calFX_FX2();
+		void calCentralTendency();
+		void calDispersion();
+		void displayOutput();
+};
+
+void Calculate(){
+	Data cal;
+	cal.readInput();
+	cal.displayOutput();
+}
+
+void updateNotes(){
+	cout<<"\nUpdate Version\n"
+		<<"=================================================================================\n"
+		<<"v0.3:\n"
+		<<"- Bug fix for v0.1 & v0.2.\n\n"
+		<<"v0.2:\n"
+		<<"- Rewrite code\n"
+		<<"*Known issue: Cumulative frequency is displaying the wrong number.\n\n"
+		<<"v0.1:\n"
+		<<"- Table list Maker\n"
+		<<"- Calculation for Mean, Mode, Median, Q1, Q3, IR, Variance & Standard Deviation.\n"
+		<<"*Known issue: Cumulative frequency is displaying the wrong number.\n"
+		<<"=================================================================================";
+}
+
+int main(){
+	int x;
+	char choice;
+	bool loop=true;
+	
+	cout<<"Grouped data calculator v0.3 Menu";
+	do{
+		cout<<"\n\n";
+		cout<<"Pick a number:\n"
+			<<"1. Start calculator\n"
+			<<"2. What's new?\n"
+			<<"3. Exit program\n\n"
+			<<"Enter a number: ";
+		cin>>x;
+		
+		switch(x){
+			case 1:
+				Calculate();
+				cout<<"\n\n"
+					<<"Continue to calculate? (Y/N) : ";
+				cin>>choice;
+				switch(toupper(choice)){
+					case 'Y':
+						break;
+					case 'N':
+						loop=false;
+						cout<<"Closing";
+						for (int i = 0; i < 3; i++){
+							cout<< "."<<flush;
+    						Sleep(1000);
+						}
+						break;
+				}
+				break;
+			case 2:
+				void updateNotes();
+				break;
+			case 3:
+				cout<<"Closing";
+				for (int i = 0; i < 3; i++){
+					cout<< "."<<flush;
+					Sleep(1000);
+				}
+				return 0;
+			default:
+				cout<<"Invaild input! Please try again.";
+				cin.clear();
+				cin.ignore();
+				break;
+		}
+	}while(loop!=false);
+	
+	return 0;
+}
+
+Data::Data(){
+	c1=0;
+	c2=0;
+	cwidth=0;
+	LB=0;
+	UB=0;
+	freq[SIZE]={0};
+	totalF=0;
+	totalFX=0;
+	totalFX2=0;
+	mean=0;
+	median=0;
+	mode=0;
+	newC1[SIZE]={};
+	newC2[SIZE]={};
+	cF[SIZE]={};
+	upperB[SIZE]={};
+	lowerB[SIZE]={};
+	mid[SIZE]={};
+	FX[SIZE]={};
+	FX2[SIZE]={};
+	IR=0;
+	Q1=0;
+	Q3=0;
+	variance=0;
+	SD=0;
+}
+
+void Data::readInput(){
+	double input;
+	cout<<"\n";
+	cout<<"Please input the first class interval: ";
+	cin>>c1;
+	cout<<"Please input the second class interval: ";
+	cin>>c2;
+	cout<<"Please input row: ";
+	cin>>row;
+	for(int i=1; i<=row; i++){
+		cout<<"Please input frequency NO."<<i<<": ";
+		cin>>input;
+		freq[i]=input;
+	}
+}
+
+void Data::calCWidth(){
+	double C1,C2;
+	if((c1-(int)c1)!=1){
+		LB=c1-0.5;
+		UB=c2+0.5;
+	}else{
+		string s=to_string(c2);
+		s=s.substr(s.find(".")+1);						//calculate decimal point
+		double num=s.length();
+		LB=c1-(0.5*pow(10, num));
+		UB=c2+(0.5*pow(10, num));
+	}
+	cwidth=UB-LB;
+}
+
+void Data::calInterval(){
+	newC1[1]=c1;
+	newC2[1]=c2;
+	for (int i=1 ; i<=row ; i++){
+		newC1[i+1]=newC1[i]+cwidth;
+		newC2[i+1]=newC2[i]+cwidth;
+	}
+}
+
+void Data::calCumFreq(){
+	double A=0;
+	for(int i=1 ; i<=row ; i++){
+		A+=freq[i];
+		cF[i]=A;
+	}
+}
+
+void Data::calTotalFreq(){
+	for(int i=1 ; i<=row ; i++){
+		totalF+=freq[i];
+	}
+}
+
+void Data::calBoundary(){
+	upperB[1]=UB;
+	lowerB[1]=LB;
+	for(int i=1 ; i<=row ; i++){
+		upperB[i+1]=upperB[i]+cwidth;
+		lowerB[i+1]=lowerB[i]+cwidth;
+	}
+}
+
+void Data::calMid(){
+	for (int i=1 ; i<=row ; i++){
+		mid[i]=(upperB[i]+lowerB[i])/2;
+	}
+}
+
+void Data::calFX_FX2(){
+	for (int i=1 ; i<=row ; i++){
+		FX[i]=freq[i]*mid[i];
+		totalFX+=FX[i];
+		FX2[i]=freq[i]*pow(mid[i],2);
+		totalFX2+=FX2[i];
+	}
+}
+
+void Data::calCentralTendency(){
+	mean=totalFX/totalF;
+	
+	double CF[SIZE];
+	double half_F=totalF/2;
+	for(int i=1 ; i<=row ; i++){
+		if (cF[i]>=half_F){
+			CF[i]=cF[i]-freq[i];
+			median=lowerB[i]+((half_F-CF[i])/freq[i])*cwidth;
+			break;
+		}
+	}
+	
+	int x=distance(freq,max_element(freq,freq+row));
+	double d1=freq[x]-freq[x-1];
+	double d2=freq[x]-freq[x+1];
+	mode=lowerB[x]+(d1/(d1+d2))*cwidth;
+}
+
+void Data::calDispersion(){
+	double CF[SIZE];
+	double num1=totalF/4;
+	double num3=(3*totalF)/4;
+	for(int i=1 ; i<=row ; i++){
+		if (cF[i]>=num1){
+			CF[i]=cF[i]-freq[i];
+			Q1=lowerB[i]+((num1-CF[i])/freq[i])*cwidth;
+		}
+		
+		if (cF[i]>=num3){
+			CF[i]=cF[i]-freq[i];
+			Q3=lowerB[i]+((num3-CF[i])/freq[i])*cwidth;
+			break;
+		}
+	}
+	IR=Q3-Q1;
+	
+    variance=(1/(totalF-1))*(totalFX2-(pow(totalFX,2)/totalF));
+    SD=sqrt(variance);
+}
+
+void Data::displayOutput(){
+	calCWidth();
+	calInterval();
+	calCumFreq();
+	calTotalFreq();
+	calBoundary();
+	calMid();
+	calFX_FX2();
+	calCentralTendency();
+	calDispersion();
+	
+	cout<<"\n";
+	for(int i=0; i<105; i++){
+		cout<<"=";
+	}
+	
+	cout<<"\n\n"
+		<<setw(17)<<left<<"CLASS INTERVAL"
+		<<setw(21)<<left<<"CLASS BOUNDARY"
+		<<setw(10)<<left<<"MIDPOINT"
+		<<setw(11)<<left<<"FREQUENCY"
+		<<setw(22)<<left<<"CUMULATIVE FREQUENCY"
+		<<setw(13)<<left<<"FX"
+		<<setw(13)<<left<<"FX^2"<<endl;
+			
+	for(int i=1 ; i<=row ; i++){
+		cout<<setw(6)<<right<<newC1[i]
+			<<" - "
+			<<setw(8)<<left<<newC2[i]
+			<<setw(8)<<right<<lowerB[i]
+			<<" - "
+			<<setw(10)<<left<<upperB[i]
+			<<setw(10)<<left<<mid[i]
+			<<setw(11)<<left<<freq[i]
+			<<setw(22)<<left<<cF[i]
+			<<setw(13)<<left<<FX[i]
+			<<setw(13)<<left<<FX2[i]<<endl;
+	}
+	
+	cout<<"\n"
+		<<"Class width: "<<cwidth<<"\n"
+		<<"Total frequency: "<<totalF<<"\n"
+		<<"Total FX: "<<totalFX<<"\n"
+		<<"Total FX^2: "<<totalFX2<<"\n"
+		<<"Mean: "<<mean<<"\n"
+		<<"Median: "<<median<<"\n"
+		<<"Mode: "<<mode<<"\n"
+		<<"Q1: "<<Q1<<"\n"
+		<<"Q3: "<<Q3<<"\n"
+		<<"Interquartile Range: "<<IR<<"\n"
+		<<"Variance: "<<variance<<"\n"
+		<<"Standard Deviation: "<<SD<<endl;
+	cout<<"\n";
+	
+	for(int i=0; i<105; i++){
+		cout<<"=";
+	}
+}
