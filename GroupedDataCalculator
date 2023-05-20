@@ -47,6 +47,8 @@ void Calculate(){
 void updateNotes(){
 	cout<<"\nUpdate Version\n"
 		<<"=================================================================================\n"
+		<<"v1.0:\n"
+		<<"- Full Released.\n\n"
 		<<"v0.3:\n"
 		<<"- Bug fix for v0.1 & v0.2.\n\n"
 		<<"v0.2:\n"
@@ -64,7 +66,7 @@ int main(){
 	char choice;
 	bool loop=true;
 	
-	cout<<"Grouped data calculator v0.3 Menu";
+	cout<<"Grouped data calculator v1.0 Menu";
 	do{
 		cout<<"\n\n";
 		cout<<"Pick a number:\n"
